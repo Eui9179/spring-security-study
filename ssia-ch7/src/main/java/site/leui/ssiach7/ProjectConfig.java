@@ -2,6 +2,7 @@ package site.leui.ssiach7;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
@@ -18,6 +19,8 @@ public class ProjectConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic();
 
+        http.csrf().disable();
+
         // 모든 요청에 대해 액세스를 허용한다.
 //        http.authorizeRequests()
 //                .anyRequest()
@@ -30,8 +33,9 @@ public class ProjectConfig extends WebSecurityConfigurerAdapter {
 
         // SpEL을 사용한 권한 확인
         http.authorizeRequests()
-                .anyRequest()
-                .access("hasAuthority('READ') and !hasAuthority('DELETE')");
+                .mvcMatchers(HttpMethod.POST, "/hello").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/hello").authenticated()
+                .anyRequest().access("hasAuthority('READ') and !hasAuthority('DELETE')");
     }
 
     @Bean
